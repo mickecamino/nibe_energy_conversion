@@ -8,12 +8,10 @@ from homeassistant.helpers import selector
 from .const import (
     CONF_AUX_USED_HEATING,
     CONF_AUX_USED_HOT_WATER,
-    CONF_PROD_COOLING,
     CONF_PROD_HEATING,
     CONF_PROD_HOT_WATER,
     CONF_RUN_ON_START,
     CONF_UPDATE_MINUTE,
-    CONF_USED_COOLING,
     CONF_USED_HEATING,
     CONF_USED_HOT_WATER,
     DEFAULT_RUN_ON_START,
@@ -39,10 +37,8 @@ class NibeEnergyConversionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_PROD_COOLING): SENSOR_SELECTOR,
                 vol.Required(CONF_PROD_HEATING): SENSOR_SELECTOR,
                 vol.Required(CONF_PROD_HOT_WATER): SENSOR_SELECTOR,
-                vol.Required(CONF_USED_COOLING): SENSOR_SELECTOR,
                 vol.Required(CONF_USED_HEATING): SENSOR_SELECTOR,
                 vol.Required(CONF_USED_HOT_WATER): SENSOR_SELECTOR,
                 vol.Required(CONF_AUX_USED_HEATING): SENSOR_SELECTOR,

@@ -15,7 +15,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from .const import (
-    COP_COOLING,
     COP_HEATING,
     COP_HOT_WATER,
     COP_TOTAL,
@@ -24,10 +23,8 @@ from .const import (
     SUM_USED,
     TOTAL_AUX_USED_HEATING,
     TOTAL_AUX_USED_HOT_WATER,
-    TOTAL_PROD_COOLING,
     TOTAL_PROD_HEATING,
     TOTAL_PROD_HOT_WATER,
-    TOTAL_USED_COOLING,
     TOTAL_USED_HEATING,
     TOTAL_USED_HOT_WATER,
 )
@@ -41,16 +38,6 @@ class NibeEnergySensorDescription(SensorEntityDescription):
 
 
 SENSOR_DESCRIPTIONS = [
-    NibeEnergySensorDescription(
-        key=TOTAL_PROD_COOLING,
-        translation_key=TOTAL_PROD_COOLING,
-        data_key=TOTAL_PROD_COOLING,
-        kind="total",
-        name="Produced cooling (kWh)",
-        native_unit_of_measurement="kWh",
-        device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.TOTAL_INCREASING,
-    ),
     NibeEnergySensorDescription(
         key=TOTAL_PROD_HEATING,
         translation_key=TOTAL_PROD_HEATING,
@@ -67,16 +54,6 @@ SENSOR_DESCRIPTIONS = [
         data_key=TOTAL_PROD_HOT_WATER,
         kind="total",
         name="Produced hot water (kWh)",
-        native_unit_of_measurement="kWh",
-        device_class=SensorDeviceClass.ENERGY,
-        state_class=SensorStateClass.TOTAL_INCREASING,
-    ),
-    NibeEnergySensorDescription(
-        key=TOTAL_USED_COOLING,
-        translation_key=TOTAL_USED_COOLING,
-        data_key=TOTAL_USED_COOLING,
-        kind="total",
-        name="Used cooling (kWh)",
         native_unit_of_measurement="kWh",
         device_class=SensorDeviceClass.ENERGY,
         state_class=SensorStateClass.TOTAL_INCREASING,
@@ -171,18 +148,7 @@ SENSOR_DESCRIPTIONS = [
         icon="mdi:alpha-c-circle",
         state_class=SensorStateClass.MEASUREMENT,
     ),
-    NibeEnergySensorDescription(
-        key=COP_COOLING,
-        translation_key=COP_COOLING,
-        data_key=COP_COOLING,
-        kind="cop",
-        name="COP cooling (last hour)",
-        native_unit_of_measurement="COP",
-        icon="mdi:alpha-c-circle",
-        state_class=SensorStateClass.MEASUREMENT,
-    ),
 ]
-
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities

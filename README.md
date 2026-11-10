@@ -1,27 +1,29 @@
-﻿[![](https://img.shields.io/github/release/VitisEK/nibe_energy_conversion/all.svg?style=for-the-badge)](https://github.com/VitisEK/nibe_energy_conversion/releases)
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
-[![](https://img.shields.io/github/license/VitisEK/nibe_energy_conversion?style=for-the-badge)](LICENSE)
-[![](https://img.shields.io/badge/MAINTAINER-%40VitisEK-red?style=for-the-badge)](https://github.com/VitisEK)
-[![](https://img.shields.io/badge/GitHub%20Sponsors-SUPPORT-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/VitisEK)
+﻿[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
+[![](https://img.shields.io/github/license/mickecamino/nibe_energy_conversion?style=for-the-badge)](LICENSE)
 [![](https://img.shields.io/badge/COMMUNITY-FORUM-success?style=for-the-badge)](https://community.home-assistant.io)
 
-# NIBE Energy Conversion (nibe_energy_conversion)
+# A FORK of NIBE Energy Conversion (nibe_energy_conversion)
+# This is my fork of the above repository - all cooling sensors removed
+This software REQUIRES that you have installed [Nibe Heat Pump](https://www.home-assistant.io/integrations/nibe_heatpump/)
 
+Nibe S735 does not have cooling feature. And that made it impossible to install this software. So I forked it and removed all instances used for cooling.
+
+## Tested on a Nibe S735
 Custom Home Assistant integration that converts NIBE “past hour” energy sensors (kWh) into cumulative totals and COP metrics.
 
 ## Features
-- UI configuration for 8 input sensors (past-hour kWh)
+- UI configuration for 6 input sensors (past-hour kWh)
 - UI options for update schedule (minute past hour) and run-on-start
-- 8 cumulative energy totals (total_increasing)
+- 6 cumulative energy totals (total_increasing)
 - 2 cumulative sums (produced/used)
-- 4 COP sensors for last hour (total, hot water, heating, cooling)
+- 3 COP sensors for last hour (total, hot water, heating)
 - No helper entities; state stored internally
 
 ## Installation
 ### HACS
 1) In Home Assistant, open HACS → Integrations.
 2) Open the menu in the top right corner and choose Custom repositories.
-3) Add `https://github.com/VitisEK/nibe_energy_conversion` as category `Integration`.
+3) Add `https://github.com/mickecamino/nibe_energy_conversion` as category `Integration`.
 4) Find `NIBE Energy Conversion` in HACS and install it.
 5) Restart Home Assistant.
 6) Add the integration in Settings → Devices & Services → Add Integration.
@@ -33,10 +35,16 @@ Custom Home Assistant integration that converts NIBE “past hour” energy sens
 
 ## Configuration
 ### Inputs (GUI)
-Select these 8 “past hour” sensors:
-- Produced: cooling, heating, hot water
-- Used: cooling, heating, hot water
-- Auxiliary used: heating, hot water
+Select these 6 “past hour” sensors:
+#### Produced:
+* sensor.energy_log_energy_produced_for_heat_during_past_hour_32284
+* sensor.energy_log_energy_produced_for_hot_water_during_past_hour_32286
+#### Used:
+* sensor.energy_log_energy_used_for_heat_during_past_hour_32292
+* sensor.energy_log_energy_used_for_hot_water_during_past_hour_32294
+#### Auxiliary used:
+* sensor.energy_log_energy_used_by_additional_heater_for_heat_during_past_hour_32300
+* sensor.energy_log_energy_used_by_additional_heater_for_hot_water_during_past_hour_32302
 
 ### Options (GUI)
 - `update_minute`: minute past the hour to process the last hour (default 15)
@@ -44,8 +52,8 @@ Select these 8 “past hour” sensors:
 
 ## Outputs
 ### Energy totals (kWh, total_increasing)
-- Produced cooling/heating/hot water
-- Used cooling/heating/hot water
+- Produced heating/hot water
+- Used heating/hot water
 - Auxiliary used heating/hot water
 
 ### Sums (kWh, total_increasing)
@@ -56,7 +64,6 @@ Select these 8 “past hour” sensors:
 - COP total
 - COP hot water
 - COP heating
-- COP cooling
 
 ## Notes
 - Aggregation runs only at the scheduled time (and optionally at start).
@@ -85,10 +92,7 @@ Notes:
 
 
 ## Changelog
+[2026-11-09]  
+Removed all instances of cooling, does not work with Nibe S735
 
-### v1.0.1 
-
-*   Fix integration domain spelling for HACS publishing.
-
-## Support
-Issues and feature requests: https://github.com/VitisEK/nibe_energy_conversion/issues
+### v1.0.5

@@ -12,13 +12,10 @@ from homeassistant.util import dt as dt_util
 from .const import (
     CONF_AUX_USED_HEATING,
     CONF_AUX_USED_HOT_WATER,
-    CONF_PROD_COOLING,
     CONF_PROD_HEATING,
     CONF_PROD_HOT_WATER,
-    CONF_USED_COOLING,
     CONF_USED_HEATING,
     CONF_USED_HOT_WATER,
-    COP_COOLING,
     COP_HEATING,
     COP_HOT_WATER,
     COP_LAST_HOUR,
@@ -29,10 +26,8 @@ from .const import (
     SUM_USED,
     TOTAL_AUX_USED_HEATING,
     TOTAL_AUX_USED_HOT_WATER,
-    TOTAL_PROD_COOLING,
     TOTAL_PROD_HEATING,
     TOTAL_PROD_HOT_WATER,
-    TOTAL_USED_COOLING,
     TOTAL_USED_HEATING,
     TOTAL_USED_HOT_WATER,
 )
@@ -41,10 +36,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 TOTAL_KEYS = [
-    TOTAL_PROD_COOLING,
     TOTAL_PROD_HEATING,
     TOTAL_PROD_HOT_WATER,
-    TOTAL_USED_COOLING,
     TOTAL_USED_HEATING,
     TOTAL_USED_HOT_WATER,
     TOTAL_AUX_USED_HEATING,
@@ -53,10 +46,8 @@ TOTAL_KEYS = [
 
 
 INPUT_TO_TOTAL = {
-    CONF_PROD_COOLING: TOTAL_PROD_COOLING,
     CONF_PROD_HEATING: TOTAL_PROD_HEATING,
     CONF_PROD_HOT_WATER: TOTAL_PROD_HOT_WATER,
-    CONF_USED_COOLING: TOTAL_USED_COOLING,
     CONF_USED_HEATING: TOTAL_USED_HEATING,
     CONF_USED_HOT_WATER: TOTAL_USED_HOT_WATER,
     CONF_AUX_USED_HEATING: TOTAL_AUX_USED_HEATING,
@@ -72,7 +63,6 @@ class NibeEnergyData:
     last_cop_total: float
     last_cop_hot_water: float
     last_cop_heating: float
-    last_cop_cooling: float
 
 
 class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
@@ -92,7 +82,6 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
             last_cop_total=0.0,
             last_cop_hot_water=0.0,
             last_cop_heating=0.0,
-            last_cop_cooling=0.0,
         )
 
     async def async_initialize(self) -> None:
@@ -106,7 +95,6 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
                 last_cop_total=float(stored.get("last_cop_total", 0.0)),
                 last_cop_hot_water=float(stored.get("last_cop_hot_water", 0.0)),
                 last_cop_heating=float(stored.get("last_cop_heating", 0.0)),
-                last_cop_cooling=float(stored.get("last_cop_cooling", 0.0)),
             )
         self.async_set_updated_data(self.data)
 
@@ -142,19 +130,16 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
         for key, value in inputs.items():
             totals[key] = round(totals.get(key, 0.0) + value, 3)
 
-        prod_cooling = inputs[TOTAL_PROD_COOLING]
         prod_heating = inputs[TOTAL_PROD_HEATING]
         prod_hot_water = inputs[TOTAL_PROD_HOT_WATER]
-        used_cooling = inputs[TOTAL_USED_COOLING]
         used_heating = inputs[TOTAL_USED_HEATING]
         used_hot_water = inputs[TOTAL_USED_HOT_WATER]
         used_aux_heating = inputs[TOTAL_AUX_USED_HEATING]
         used_aux_hot_water = inputs[TOTAL_AUX_USED_HOT_WATER]
 
-        produced_last = prod_cooling + prod_heating + prod_hot_water
+        produced_last = prod_heating + prod_hot_water
         used_last = (
-            used_cooling
-            + used_heating
+            used_heating
             + used_hot_water
             + used_aux_heating
             + used_aux_hot_water
@@ -171,9 +156,6 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
             if (used_heating + used_aux_heating) > 0
             else 0.0
         )
-        last_cop_cooling = (
-            round(prod_cooling / used_cooling, 2) if used_cooling > 0 else 0.0
-        )
 
         data = NibeEnergyData(
             totals=totals,
@@ -182,7 +164,6 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
             last_cop_total=last_cop_total,
             last_cop_hot_water=last_cop_hot_water,
             last_cop_heating=last_cop_heating,
-            last_cop_cooling=last_cop_cooling,
         )
 
         await self.store.async_save(
@@ -193,7 +174,6 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
                 "last_cop_total": data.last_cop_total,
                 "last_cop_hot_water": data.last_cop_hot_water,
                 "last_cop_heating": data.last_cop_heating,
-                "last_cop_cooling": data.last_cop_cooling,
             }
         )
 
@@ -206,15 +186,13 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
         totals = self.data.totals
         if key == SUM_PRODUCED:
             return round(
-                totals.get(TOTAL_PROD_COOLING, 0.0)
-                + totals.get(TOTAL_PROD_HEATING, 0.0)
+                totals.get(TOTAL_PROD_HEATING, 0.0)
                 + totals.get(TOTAL_PROD_HOT_WATER, 0.0),
                 3,
             )
         if key == SUM_USED:
             return round(
-                totals.get(TOTAL_USED_COOLING, 0.0)
-                + totals.get(TOTAL_USED_HEATING, 0.0)
+                totals.get(TOTAL_USED_HEATING, 0.0)
                 + totals.get(TOTAL_USED_HOT_WATER, 0.0)
                 + totals.get(TOTAL_AUX_USED_HEATING, 0.0)
                 + totals.get(TOTAL_AUX_USED_HOT_WATER, 0.0),
@@ -232,6 +210,4 @@ class NibeEnergyCoordinator(DataUpdateCoordinator[NibeEnergyData]):
             return float(self.data.last_cop_hot_water)
         if key == COP_HEATING:
             return float(self.data.last_cop_heating)
-        if key == COP_COOLING:
-            return float(self.data.last_cop_cooling)
         return float(self.data.last_cop)
