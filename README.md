@@ -70,26 +70,6 @@ Select these 6 “past hour” sensors:
 - Double-count protection uses the hour-end timestamp internally.
 - COP is computed from the same last-hour inputs and updated on schedule.
 
-## rebuild_history_stats_and_storage.py
-### Purpose
-A one-time rebuild tool that recalculates historical energy totals from hourly “past hour” sensors and then patches Home Assistant storage so the integration’s internal totals match the rebuilt history.
-
-### What it does
-- Reads hourly long-term statistics from `home-assistant_v2.db`.
-- Rebuilds cumulative totals for all output sensors and writes them to `statistics` and (optionally) `statistics_short_term`.
-- Updates the integration storage file (`.storage/nibe_energy_conversion_data_<entry_id>`) with the latest cumulative totals and `last_processed`.
-- Stops Home Assistant Core before writing, makes backups, then starts Core again.
-
-### How to use
-1) Run the script on the Home Assistant host (or in the container) with access to `/config`.
-2) Follow the wizard prompts (DB path, `.storage` dir, input/output statistic_ids).
-3) Confirm stopping HA Core when asked.
-4) After it finishes, HA is started again and totals should match the rebuilt history.
-
-Notes:
-- The script creates backups of the DB and the selected storage file.
-- Default paths: `/config/home-assistant_v2.db` and `/config/.storage`.
-
 
 ## Changelog
 [2026-11-09]  
